@@ -1,0 +1,23 @@
+# Entorno virtual
+.venv/
+venv/
+env/
+
+# Base de datos local (no se versiona, se crea en runtime)
+*.db
+*.sqlite
+
+# Tokens de autenticación (contiene credenciales reales)
+tokens.json
+
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+
+# IDEs
+.vscode/
+.idea/
+
+# Variables de entorno
+.env
