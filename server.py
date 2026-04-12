@@ -36,6 +36,16 @@ CREATE TABLE IF NOT EXISTS logs (
 """)
 conn.commit()  # Confirma la creación de la tabla en la DB
 
+# Endpoint raíz: redirige al usuario a los endpoints disponibles
+@app.route("/", methods=["GET"])
+def index():
+    return jsonify({
+        "endpoints": {
+            "POST /logs": "Enviar logs",
+            "GET /logs": "Consultar logs"
+        }
+    }), 200
+
 # Endpoint POST /logs: recibe logs de los clientes y los guarda en la DB
 @app.route("/logs", methods=["POST"])
 def receive_logs():
