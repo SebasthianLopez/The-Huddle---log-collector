@@ -1,5 +1,5 @@
 # Importaciones necesarias para la app
-from flask import Flask, request, jsonify  # Flask para el servidor HTTP, request para leer datos entrantes, jsonify para responder en JSON
+from flask import Flask, request, jsonify, redirect  # Flask para el servidor HTTP, request para leer datos entrantes, jsonify para responder en JSON
 import sqlite3                             # Driver para la base de datos SQLite
 from datetime import datetime, timezone   # Para generar timestamps con zona horaria UTC
 import json                               # Para leer el archivo tokens.json
@@ -36,18 +36,18 @@ CREATE TABLE IF NOT EXISTS logs (
 """)
 conn.commit()  # Confirma la creación de la tabla en la DB
 
-# Endpoint raíz: redirige al usuario a los endpoints disponibles
-@app.route("/", methods=["GET"])
+# Redirect de / a /logs para que la URL raíz funcione
+@app.route("/")
 def index():
-    return jsonify({
-        "endpoints": {
-            "POST /logs": "Enviar logs",
-            "GET /logs": "Consultar logs"
-        }
-    }), 200
+    return redirect("/logs")
 
-# Endpoint POST /logs: recibe logs de los clientes y los guarda en la DB
-@app.route("/logs", methods=["POST"])
+# Endpoint /logs: maneja POST (recibir logs) y GET (consultar logs)
+@app.route("/logs", methods=["GET", "POST"])
+def logs():
+    if request.method == "POST":
+        return receive_logs()
+    return get_logs()
+
 def receive_logs():
     # Extrae el token del header Authorization (formato: "Token <valor>")
     auth = request.headers.get("Authorization", "")
@@ -78,8 +78,6 @@ def receive_logs():
 
     return jsonify({"status": "Logs recibidos"}), 201
 
-# Endpoint GET /logs: consulta logs con filtros opcionales via query params
-@app.route("/logs", methods=["GET"])
 def get_logs():
     args = request.args  # Parámetros de la URL (?severity=ERROR&...)
 
@@ -121,4 +119,4 @@ def get_logs():
     return jsonify(logs), 200
 
 if __name__ == "__main__":
-    app.run(debug=True)
+    app.run(host="0.0.0.0", debug=True)
