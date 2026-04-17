@@ -42,6 +42,7 @@ def index():
     return redirect("/logs")
 
 # Endpoint /logs: maneja POST (recibir logs) y GET (consultar logs)
+# es una funcion que modifica otra funcion. 
 @app.route("/logs", methods=["GET", "POST"])
 def logs():
     if request.method == "POST":
@@ -50,6 +51,7 @@ def logs():
 
 def receive_logs():
     # Extrae el token del header Authorization (formato: "Token <valor>")
+    # request.headers: Lee los datos ocultos
     auth = request.headers.get("Authorization", "")
     token = auth.replace("Token ", "")
 
