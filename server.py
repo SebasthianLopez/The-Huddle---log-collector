@@ -8,7 +8,6 @@ import json                               # Para leer el archivo tokens.json
 app = Flask(__name__)
 
 # Carga de tokens válidos desde archivo externo
-# tokens.json tiene el formato {"servicio": "token-string", ...}
 with open("tokens.json") as f:
     VALID_TOKENS = json.load(f)
 
@@ -37,12 +36,13 @@ CREATE TABLE IF NOT EXISTS logs (
 conn.commit()  # Confirma la creación de la tabla en la DB
 
 # Redirect de / a /logs para que la URL raíz funcione
+# decorador
 @app.route("/")
 def index():
     return redirect("/logs")
 
 # Endpoint /logs: maneja POST (recibir logs) y GET (consultar logs)
-# es una funcion que modifica otra funcion. 
+# es una funcion que modifica otra funcion. decorador
 @app.route("/logs", methods=["GET", "POST"])
 def logs():
     if request.method == "POST":
@@ -61,11 +61,11 @@ def receive_logs():
 
     # Lee el cuerpo JSON; acepta tanto un objeto único como una lista de logs
     logs = request.get_json()
-    if not isinstance(logs, list):
+    if not isinstance(logs, list): # verifica si algo es de un tipo especifico.
         logs = [logs]  
 
     # Genera el timestamp de recepción en el servidor 
-    now = datetime.now(timezone.utc).isoformat()
+    now = datetime.now(timezone.utc).isoformat() # convierte una fecha a texto
 
     
     cursor.executemany("""

@@ -2,9 +2,16 @@ import requests
 import random
 from datetime import datetime, timezone
 
-TOKEN = "abc123"
-SERVICE_NAME = "service_alpha"
+TOKEN = "token-secreto-123"
 URL = "http://localhost:5000/logs"
+
+SERVICE_NAMES = [
+    "auth-service",
+    "payment-service",
+    "user-service",
+    "notification-service",
+    "inventory-service",
+]
 
 SEVERITIES = ["INFO", "DEBUG", "ERROR", "WARNING"]
 MESSAGES = [
@@ -19,13 +26,13 @@ def generate_log():
     # Función que genera un log aleatorio con los 4 campos requeridos por el servidor
     return {
         "timestamp": datetime.now(timezone.utc).isoformat(),  # Fecha y hora exacta del evento en formato UTC
-        "service":   SERVICE_NAME,                             # Nombre del servicio que genera el log
+        "service":   random.choice(SERVICE_NAMES),               # Elige un servicio al azar de la lista
         "severity":  random.choice(SEVERITIES),               # Elige un nivel de severidad al azar de la lista
         "message":   random.choice(MESSAGES)                  # Elige un mensaje al azar de la lista
     }
 
 headers = {"Authorization": f"Token {TOKEN}"}                 # Arma el header de autenticación con el token del servicio
-logs = [generate_log() for _ in range(5)]                     # Genera una lista de 5 logs llamando a generate_log() 5 veces
+logs = [generate_log() for _ in range(1000)]                     # Genera una lista de 5 logs llamando a generate_log() 5 veces
 
 response = requests.post(URL, json=logs, headers=headers)     # Envía los 5 logs de una sola vez al servidor con POST
 
