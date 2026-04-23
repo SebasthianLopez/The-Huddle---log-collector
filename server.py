@@ -17,7 +17,7 @@ def is_token_valid(token):
     return token in VALID_TOKENS.values()
 
 
-# Conexión a la base de datos SQLite 
+# Conexión a la base de datos SQLite
 # check_same_thread=False permite usar la misma conexión desde distintos contextos de Flask
 conn = sqlite3.connect("logs.db", check_same_thread=False)
 cursor = conn.cursor()
@@ -62,12 +62,12 @@ def receive_logs():
     # Lee el cuerpo JSON; acepta tanto un objeto único como una lista de logs
     logs = request.get_json()
     if not isinstance(logs, list): # verifica si algo es de un tipo especifico.
-        logs = [logs]  
+        logs = [logs]
 
-    # Genera el timestamp de recepción en el servidor 
+    # Genera el timestamp de recepción en el servidor
     now = datetime.now(timezone.utc).isoformat() # convierte una fecha a texto
 
-    
+
     cursor.executemany("""
         INSERT INTO logs (timestamp, service, severity, message, received_at)
         VALUES (?, ?, ?, ?, ?)
@@ -76,7 +76,7 @@ def receive_logs():
         log.get("severity"), log.get("message"), now)
         for log in logs
     ])
-    conn.commit()  
+    conn.commit()
 
     return jsonify({"status": "Logs recibidos"}), 201
 
